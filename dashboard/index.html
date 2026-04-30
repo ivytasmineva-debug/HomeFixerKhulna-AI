@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HomeFixerKhulna — Admin Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@400;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0f1e;
+    --surface: #111827;
+    --surface2: #1a2235;
+    --accent: #f97316;
+    --accent2: #fb923c;
+    --green: #22c55e;
+    --red: #ef4444;
+    --yellow: #eab308;
+    --blue: #3b82f6;
+    --text: #f1f5f9;
+    --muted: #64748b;
+    --border: #1e293b;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Noto Sans Bengali', sans-serif;
+    min-height: 100vh;
+  }
+
+  /* Login */
+  #login-screen {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: radial-gradient(ellipse at 30% 50%, #1a2a4a 0%, var(--bg) 70%);
+  }
+
+  .login-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 48px 40px;
+    width: 380px;
+    text-align: center;
+  }
+
+  .login-logo {
+    font-family: 'Space Mono', monospace;
+    font-size: 14px;
+    color: var(--accent);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .login-title {
+    font-size: 26px;
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+
+  .login-sub {
+    color: var(--muted);
+    font-size: 14px;
+    margin-bottom: 36px;
+  }
+
+  .input-group {
+    margin-bottom: 16px;
+    text-align: left;
+  }
+
+  .input-group label {
+    display: block;
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+
+  .input-group input {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 16px;
+    color: var(--text);
+    font-size: 15px;
+    font-family: inherit;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .input-group input:focus { border-color: var(--accent); }
+
+  .btn-login {
+    width: 100%;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    padding: 14px;
+    font-size: 16px;
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+    margin-top: 8px;
+    transition: background 0.2s, transform 0.1s;
+  }
+
+  .btn-login:hover { background: var(--accent2); transform: translateY(-1px); }
+  .btn-login:active { transform: translateY(0); }
+
+  #login-error {
+    color: var(--red);
+    font-size: 13px;
+    margin-top: 12px;
+    display: none;
+  }
+
+  /* Dashboard Layout */
+  #dashboard-screen { display: none; min-height: 100vh; }
+
+  .sidebar {
+    position: fixed;
+    left: 0; top: 0; bottom: 0;
+    width: 240px;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    padding: 24px 0;
+    z-index: 100;
+  }
+
+  .sidebar-logo {
+    padding: 0 24px 24px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 16px;
+  }
+
+  .sidebar-logo .brand {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+
+  .sidebar-logo .name {
+    font-size: 18px;
+    font-weight: 700;
+    margin-top: 4px;
+  }
+
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 24px;
+    cursor: pointer;
+    color: var(--muted);
+    font-size: 15px;
+    transition: all 0.2s;
+    border-left: 3px solid transparent;
+  }
+
+  .nav-item:hover, .nav-item.active {
+    color: var(--text);
+    background: var(--surface2);
+    border-left-color: var(--accent);
+  }
+
+  .nav-icon { font-size: 18px; width: 24px; text-align: center; }
+
+  .main-content {
+    margin-left: 240px;
+    padding: 32px;
+    min-height: 100vh;
+  }
+
+  .top-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 32px;
+  }
+
+  .page-title { font-size: 24px; font-weight: 700; }
+  .page-sub { color: var(--muted); font-size: 14px; margin-top: 4px; }
+
+  .btn-logout {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    border-radius: 8px;
+    padding: 8px 16px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 14px;
+    transition: all 0.2s;
+  }
+
+  .btn-logout:hover { border-color: var(--red); color: var(--red); }
+
+  /* Stats Cards */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    margin-bottom: 32px;
+  }
+
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0; right: 0;
+    width: 80px; height: 80px;
+    border-radius: 50%;
+    opacity: 0.08;
+    transform: translate(20px, -20px);
+  }
+
+  .stat-card.orange::before { background: var(--accent); }
+  .stat-card.green::before { background: var(--green); }
+  .stat-card.blue::before { background: var(--blue); }
+  .stat-card.yellow::before { background: var(--yellow); }
+
+  .stat-icon {
+    font-size: 28px;
+    margin-bottom: 12px;
+  }
+
+  .stat-value {
+    font-size: 32px;
+    font-weight: 700;
+    font-family: 'Space Mono', monospace;
+    margin-bottom: 4px;
+  }
+
+  .stat-card.orange .stat-value { color: var(--accent); }
+  .stat-card.green .stat-value { color: var(--green); }
+  .stat-card.blue .stat-value { color: var(--blue); }
+  .stat-card.yellow .stat-value { color: var(--yellow); }
+
+  .stat-label { color: var(--muted); font-size: 13px; }
+
+  /* Tables */
+  .section-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    margin-bottom: 24px;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .section-title { font-size: 17px; font-weight: 600; }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  th {
+    background: var(--surface2);
+    padding: 12px 20px;
+    text-align: left;
+    font-size: 12px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  td {
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--border);
+    font-size: 14px;
+  }
+
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: var(--surface2); }
+
+  /* Status badges */
+  .badge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  .badge-pending { background: rgba(234,179,8,0.15); color: var(--yellow); }
+  .badge-completed { background: rgba(34,197,94,0.15); color: var(--green); }
+  .badge-cancelled { background: rgba(239,68,68,0.15); color: var(--red); }
+
+  /* Booking Form */
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; padding: 24px; }
+  .form-group label {
+    display: block;
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 11px 14px;
+    color: var(--text);
+    font-size: 14px;
+    font-family: inherit;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .form-group input:focus,
+  .form-group select:focus { border-color: var(--accent); }
+  .form-group select option { background: var(--surface); }
+  .form-group.full { grid-column: 1/-1; }
+
+  .btn-submit {
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    padding: 12px 28px;
+    font-size: 15px;
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .btn-submit:hover { background: var(--accent2); }
+
+  .btn-action {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    border-radius: 6px;
+    padding: 5px 10px;
+    font-size: 12px;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.2s;
+    margin-right: 4px;
+  }
+  .btn-action:hover { border-color: var(--green); color: var(--green); }
+  .btn-action.del:hover { border-color: var(--red); color: var(--red); }
+
+  /* Toast */
+  .toast {
+    position: fixed;
+    bottom: 32px; right: 32px;
+    background: var(--green);
+    color: #fff;
+    padding: 14px 24px;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 600;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.3s;
+    z-index: 9999;
+  }
+  .toast.show { opacity: 1; transform: translateY(0); }
+
+  /* Chatbot */
+  .chat-window {
+    height: 420px;
+    overflow-y: auto;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .chat-window::-webkit-scrollbar { width: 4px; }
+  .chat-window::-webkit-scrollbar-track { background: transparent; }
+  .chat-window::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+  .msg { max-width: 72%; padding: 10px 14px; border-radius: 14px; font-size: 14px; line-height: 1.6; white-space: pre-line; }
+  .msg-bot { background: var(--surface2); align-self: flex-start; border-bottom-left-radius: 4px; }
+  .msg-user { background: var(--accent); align-self: flex-end; border-bottom-right-radius: 4px; }
+
+  .chat-input-row {
+    display: flex;
+    gap: 10px;
+    padding: 16px 20px;
+    border-top: 1px solid var(--border);
+  }
+  .chat-input-row input {
+    flex: 1;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 14px;
+    color: var(--text);
+    font-size: 14px;
+    font-family: inherit;
+    outline: none;
+  }
+  .chat-input-row input:focus { border-color: var(--accent); }
+  .btn-send {
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 18px;
+    transition: background 0.2s;
+  }
+  .btn-send:hover { background: var(--accent2); }
+
+  /* Tabs */
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  @media (max-width: 900px) {
+    .stats-grid { grid-template-columns: repeat(2, 1fr); }
+    .form-grid { grid-template-columns: 1fr; }
+    .main-content { margin-left: 0; padding: 16px; }
+    .sidebar { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- LOGIN SCREEN -->
+<div id="login-screen">
+  <div class="login-box">
+    <div class="login-logo">HomeFixer</div>
+    <div class="login-title">Admin Login</div>
+    <div class="login-sub">HomeFixerKhulna ড্যাশবোর্ডে স্বাগতম</div>
+    <div class="input-group">
+      <label>ইউজারনেম</label>
+      <input type="text" id="username" placeholder="admin" value="admin">
+    </div>
+    <div class="input-group">
+      <label>পাসওয়ার্ড</label>
+      <input type="password" id="password" placeholder="••••••••">
+    </div>
+    <button class="btn-login" onclick="doLogin()">লগইন করুন →</button>
+    <div id="login-error">❌ ভুল ইউজারনেম বা পাসওয়ার্ড।</div>
+  </div>
+</div>
+
+<!-- DASHBOARD SCREEN -->
+<div id="dashboard-screen">
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="sidebar-logo">
+      <div class="brand">HomeFixer</div>
+      <div class="name">Khulna 🏠</div>
+    </div>
+    <div class="nav-item active" onclick="showTab('overview', this)">
+      <span class="nav-icon">📊</span> ওভারভিউ
+    </div>
+    <div class="nav-item" onclick="showTab('bookings', this)">
+      <span class="nav-icon">📋</span> বুকিংস
+    </div>
+    <div class="nav-item" onclick="showTab('new-booking', this)">
+      <span class="nav-icon">➕</span> নতুন বুকিং
+    </div>
+    <div class="nav-item" onclick="showTab('services', this)">
+      <span class="nav-icon">🔧</span> সার্ভিস লিস্ট
+    </div>
+    <div class="nav-item" onclick="showTab('chatbot', this)">
+      <span class="nav-icon">🤖</span> চ্যাটবট টেস্ট
+    </div>
+  </div>
+
+  <!-- Main -->
+  <div class="main-content">
+    <div class="top-bar">
+      <div>
+        <div class="page-title" id="page-title">ওভারভিউ</div>
+        <div class="page-sub">HomeFixerKhulna Admin Panel</div>
+      </div>
+      <button class="btn-logout" onclick="doLogout()">লগআউট ↩</button>
+    </div>
+
+    <!-- Overview Tab -->
+    <div id="tab-overview" class="tab-content active">
+      <div class="stats-grid">
+        <div class="stat-card orange">
+          <div class="stat-icon">📋</div>
+          <div class="stat-value" id="total-bookings">0</div>
+          <div class="stat-label">মোট বুকিং</div>
+        </div>
+        <div class="stat-card yellow">
+          <div class="stat-icon">⏳</div>
+          <div class="stat-value" id="pending-bookings">0</div>
+          <div class="stat-label">পেন্ডিং</div>
+        </div>
+        <div class="stat-card green">
+          <div class="stat-icon">✅</div>
+          <div class="stat-value" id="completed-bookings">0</div>
+          <div class="stat-label">সম্পন্ন</div>
+        </div>
+        <div class="stat-card blue">
+          <div class="stat-icon">❌</div>
+          <div class="stat-value" id="cancelled-bookings">0</div>
+          <div class="stat-label">বাতিল</div>
+        </div>
+      </div>
+
+      <div class="section-card">
+        <div class="section-header">
+          <div class="section-title">সাম্প্রতিক বুকিং</div>
+          <button class="btn-action" onclick="loadStats()">🔄 রিফ্রেশ</button>
+        </div>
+        <table>
+          <thead>
+            <tr><th>নাম</th><th>সার্ভিস</th><th>ফোন</th><th>সময়</th><th>স্ট্যাটাস</th></tr>
+          </thead>
+          <tbody id="recent-table"><tr><td colspan="5" style="text-align:center;color:var(--muted);padding:32px">কোনো বুকিং নেই</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Bookings Tab -->
+    <div id="tab-bookings" class="tab-content">
+      <div class="section-card">
+        <div class="section-header">
+          <div class="section-title">সকল বুকিং</div>
+          <button class="btn-action" onclick="loadBookings()">🔄 রিফ্রেশ</button>
+        </div>
+        <table>
+          <thead>
+            <tr><th>নাম</th><th>ফোন</th><th>সার্ভিস</th><th>সময়</th><th>স্ট্যাটাস</th><th>অ্যাকশন</th></tr>
+          </thead>
+          <tbody id="bookings-table"><tr><td colspan="6" style="text-align:center;color:var(--muted);padding:32px">লোড হচ্ছে...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- New Booking Tab -->
+    <div id="tab-new-booking" class="tab-content">
+      <div class="section-card">
+        <div class="section-header">
+          <div class="section-title">নতুন বুকিং যোগ করুন</div>
+        </div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>গ্রাহকের নাম *</label>
+            <input type="text" id="f-name" placeholder="নাম লিখুন">
+          </div>
+          <div class="form-group">
+            <label>ফোন নম্বর *</label>
+            <input type="tel" id="f-phone" placeholder="01XXXXXXXXX">
+          </div>
+          <div class="form-group full">
+            <label>ঠিকানা (খুলনা সিটি) *</label>
+            <input type="text" id="f-address" placeholder="পূর্ণ ঠিকানা লিখুন">
+          </div>
+          <div class="form-group">
+            <label>সার্ভিস টাইপ *</label>
+            <select id="f-service">
+              <option value="">সার্ভিস বেছে নিন</option>
+              <option>এসি সার্ভিসিং ও রিপেয়ার</option>
+              <option>এসি ইন্সটলেশন</option>
+              <option>ফ্রিজ রিপেয়ার</option>
+              <option>ইলেকট্রিক্যাল সার্ভিস</option>
+              <option>প্লাম্বিং সার্ভিস</option>
+              <option>সিসিটিভি ইন্সটলেশন</option>
+              <option>ক্লিনিং সলিউশন</option>
+              <option>শিফটিং সার্ভিস</option>
+              <option>ইলেকট্রনিক্স রিপেয়ার</option>
+              <option>পেইন্টিং ও রেনোভেশন</option>
+              <option>জরুরি সার্ভিস</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>পছন্দের সময়</label>
+            <input type="text" id="f-time" placeholder="যেমন: আজ বিকেল ৫টা">
+          </div>
+          <div class="form-group full" style="padding-bottom:8px">
+            <button class="btn-submit" onclick="submitBooking()">✅ বুকিং সেভ করুন</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Services Tab -->
+    <div id="tab-services" class="tab-content">
+      <div class="section-card">
+        <div class="section-header">
+          <div class="section-title">সার্ভিস লিস্ট ও মূল্য</div>
+        </div>
+        <table>
+          <thead><tr><th>#</th><th>সার্ভিস</th><th>ক্যাটাগরি</th><th>শুরুর মূল্য (টাকা)</th></tr></thead>
+          <tbody id="services-table"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Chatbot Tab -->
+    <div id="tab-chatbot" class="tab-content">
+      <div class="section-card">
+        <div class="section-header">
+          <div class="section-title">🤖 চ্যাটবট টেস্ট করুন</div>
+          <span style="font-size:12px;color:var(--muted)">Bangla + English সাপোর্ট</span>
+        </div>
+        <div class="chat-window" id="chat-window">
+          <div class="msg msg-bot">আসসালামু আলাইকুম! 🏠 HomeFixerKhulna-তে স্বাগতম!\nআমাকে যেকোনো সার্ভিস সম্পর্কে জিজ্ঞেস করুন।</div>
+        </div>
+        <div class="chat-input-row">
+          <input type="text" id="chat-input" placeholder="বার্তা লিখুন..." onkeydown="if(event.key==='Enter') sendChat()">
+          <button class="btn-send" onclick="sendChat()">➤</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  let token = '';
+
+  async function doLogin() {
+    const u = document.getElementById('username').value;
+    const p = document.getElementById('password').value;
+    try {
+      const r = await fetch('/admin/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: u, password: p })
+      });
+      const d = await r.json();
+      if (d.success) {
+        token = d.token;
+        document.getElementById('login-screen').style.display = 'none';
+        document.getElementById('dashboard-screen').style.display = 'block';
+        loadStats(); loadBookings(); loadServices();
+      } else {
+        document.getElementById('login-error').style.display = 'block';
+      }
+    } catch (e) {
+      // Demo mode if server offline
+      document.getElementById('login-screen').style.display = 'none';
+      document.getElementById('dashboard-screen').style.display = 'block';
+      loadDemoData();
+    }
+  }
+
+  function doLogout() {
+    token = '';
+    document.getElementById('login-screen').style.display = 'flex';
+    document.getElementById('dashboard-screen').style.display = 'none';
+  }
+
+  function showTab(tab, el) {
+    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    document.getElementById('tab-' + tab).classList.add('active');
+    el.classList.add('active');
+    const titles = { overview:'ওভারভিউ', bookings:'সকল বুকিং', 'new-booking':'নতুন বুকিং', services:'সার্ভিস লিস্ট', chatbot:'চ্যাটবট টেস্ট' };
+    document.getElementById('page-title').textContent = titles[tab] || tab;
+  }
+
+  async function loadStats() {
+    try {
+      const r = await fetch('/admin/stats', { headers: { 'x-admin-token': token } });
+      const d = await r.json();
+      if (d.success) {
+        const s = d.stats;
+        document.getElementById('total-bookings').textContent = s.totalBookings;
+        document.getElementById('pending-bookings').textContent = s.pendingBookings;
+        document.getElementById('completed-bookings').textContent = s.completedBookings;
+        document.getElementById('cancelled-bookings').textContent = s.cancelledBookings;
+        const tbody = document.getElementById('recent-table');
+        if (s.recentBookings.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--muted);padding:32px">কোনো বুকিং নেই</td></tr>';
+        } else {
+          tbody.innerHTML = s.recentBookings.map(b => `
+            <tr>
+              <td>${b.name}</td>
+              <td>${b.serviceType}</td>
+              <td>${b.phone}</td>
+              <td>${b.preferredTime}</td>
+              <td><span class="badge badge-${b.status}">${statusBn(b.status)}</span></td>
+            </tr>`).join('');
+        }
+      }
+    } catch (e) { console.log('Server offline - demo mode'); }
+  }
+
+  async function loadBookings() {
+    try {
+      const r = await fetch('/bookings');
+      const d = await r.json();
+      const tbody = document.getElementById('bookings-table');
+      if (!d.bookings || d.bookings.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:32px">কোনো বুকিং নেই</td></tr>';
+        return;
+      }
+      tbody.innerHTML = d.bookings.reverse().map(b => `
+        <tr>
+          <td>${b.name}</td>
+          <td>${b.phone}</td>
+          <td>${b.serviceType}</td>
+          <td>${b.preferredTime}</td>
+          <td><span class="badge badge-${b.status}">${statusBn(b.status)}</span></td>
+          <td>
+            <button class="btn-action" onclick="updateStatus('${b.id}','completed')">✅</button>
+            <button class="btn-action del" onclick="deleteBooking('${b.id}')">🗑</button>
+          </td>
+        </tr>`).join('');
+    } catch (e) { console.log('Cannot load bookings'); }
+  }
+
+  async function loadServices() {
+    try {
+      const r = await fetch('/services');
+      const d = await r.json();
+      document.getElementById('services-table').innerHTML = d.services.map((s, i) => `
+        <tr>
+          <td>${i+1}</td>
+          <td><strong>${s.nameBn}</strong><br><span style="color:var(--muted);font-size:12px">${s.name}</span></td>
+          <td>${s.category}</td>
+          <td style="font-family:'Space Mono',monospace;color:var(--accent)">${s.price}+</td>
+        </tr>`).join('');
+    } catch(e) {}
+  }
+
+  async function submitBooking() {
+    const name = document.getElementById('f-name').value.trim();
+    const phone = document.getElementById('f-phone').value.trim();
+    const address = document.getElementById('f-address').value.trim();
+    const serviceType = document.getElementById('f-service').value;
+    const preferredTime = document.getElementById('f-time').value.trim() || 'যেকোনো সময়';
+
+    if (!name || !phone || !address || !serviceType) {
+      showToast('❌ সকল তারকা চিহ্নিত ফিল্ড পূরণ করুন', true);
+      return;
+    }
+
+    try {
+      const r = await fetch('/booking', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, phone, address, serviceType, preferredTime })
+      });
+      const d = await r.json();
+      if (d.success) {
+        showToast('✅ বুকিং সফলভাবে সেভ হয়েছে!');
+        document.getElementById('f-name').value = '';
+        document.getElementById('f-phone').value = '';
+        document.getElementById('f-address').value = '';
+        document.getElementById('f-service').value = '';
+        document.getElementById('f-time').value = '';
+        loadStats();
+      }
+    } catch(e) { showToast('✅ বুকিং সেভ হয়েছে (অফলাইন মোড)'); }
+  }
+
+  async function updateStatus(id, status) {
+    try {
+      await fetch('/booking/' + id, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status })
+      });
+      showToast('✅ স্ট্যাটাস আপডেট হয়েছে');
+      loadBookings(); loadStats();
+    } catch(e) {}
+  }
+
+  async function deleteBooking(id) {
+    if (!confirm('এই বুকিংটি ডিলিট করবেন?')) return;
+    try {
+      await fetch('/booking/' + id, { method: 'DELETE' });
+      showToast('🗑 বুকিং ডিলিট হয়েছে');
+      loadBookings(); loadStats();
+    } catch(e) {}
+  }
+
+  async function sendChat() {
+    const input = document.getElementById('chat-input');
+    const msg = input.value.trim();
+    if (!msg) return;
+    input.value = '';
+
+    const win = document.getElementById('chat-window');
+    win.innerHTML += `<div class="msg msg-user">${msg}</div>`;
+    win.scrollTop = win.scrollHeight;
+
+    try {
+      const r = await fetch('/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: msg })
+      });
+      const d = await r.json();
+      win.innerHTML += `<div class="msg msg-bot">${d.reply}</div>`;
+    } catch(e) {
+      win.innerHTML += `<div class="msg msg-bot">সার্ভার অফলাইন। কল করুন: 📞 01915200299</div>`;
+    }
+    win.scrollTop = win.scrollHeight;
+  }
+
+  function statusBn(s) {
+    const m = { pending:'পেন্ডিং', completed:'সম্পন্ন', cancelled:'বাতিল' };
+    return m[s] || s;
+  }
+
+  function showToast(msg, isError = false) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.style.background = isError ? 'var(--red)' : 'var(--green)';
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 3000);
+  }
+
+  function loadDemoData() {
+    document.getElementById('total-bookings').textContent = '12';
+    document.getElementById('pending-bookings').textContent = '4';
+    document.getElementById('completed-bookings').textContent = '7';
+    document.getElementById('cancelled-bookings').textContent = '1';
+  }
+</script>
+</body>
+</html>

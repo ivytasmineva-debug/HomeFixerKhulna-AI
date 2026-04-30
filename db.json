@@ -1,0 +1,23 @@
+{
+  "bookings": [],
+  "customers": [],
+  "services": [
+    { "id": 1, "name": "AC Servicing & Repair", "nameBn": "এসি সার্ভিসিং ও রিপেয়ার", "price": 500, "category": "ac" },
+    { "id": 2, "name": "AC Installation", "nameBn": "এসি ইন্সটলেশন", "price": 1500, "category": "ac" },
+    { "id": 3, "name": "Refrigerator Repair", "nameBn": "ফ্রিজ রিপেয়ার", "price": 400, "category": "fridge" },
+    { "id": 4, "name": "Electrical Services", "nameBn": "ইলেকট্রিক্যাল সার্ভিস", "price": 300, "category": "electrical" },
+    { "id": 5, "name": "Plumbing Services", "nameBn": "প্লাম্বিং সার্ভিস", "price": 300, "category": "plumbing" },
+    { "id": 6, "name": "CCTV Installation", "nameBn": "সিসিটিভি ইন্সটলেশন", "price": 2000, "category": "cctv" },
+    { "id": 7, "name": "Cleaning Solutions", "nameBn": "ক্লিনিং সলিউশন", "price": 500, "category": "cleaning" },
+    { "id": 8, "name": "Shifting Services", "nameBn": "শিফটিং সার্ভিস", "price": 1000, "category": "shifting" },
+    { "id": 9, "name": "Electronics Repair", "nameBn": "ইলেকট্রনিক্স রিপেয়ার", "price": 300, "category": "electronics" },
+    { "id": 10, "name": "Painting & Renovation", "nameBn": "পেইন্টিং ও রেনোভেশন", "price": 5000, "category": "painting" },
+    { "id": 11, "name": "Emergency Service", "nameBn": "জরুরি সার্ভিস", "price": 500, "category": "emergency" }
+  ],
+  "stats": {
+    "totalBookings": 0,
+    "pendingBookings": 0,
+    "completedBookings": 0,
+    "totalRevenue": 0
+  }
+}

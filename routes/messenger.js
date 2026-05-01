@@ -377,7 +377,6 @@ function handleTool(name, args) {
       return { content: [{ type: 'text', text: `Unknown tool: ${name}` }], isError: true };
   }
 }
-=======
 // routes/messenger.js — HomeFixerKhulna Enhanced Facebook Messenger Auto Reply
 // Features: Multi-turn booking flow, smart intent detection, Bangla/English bilingual
 
